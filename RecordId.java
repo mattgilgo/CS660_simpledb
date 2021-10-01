@@ -49,6 +49,7 @@ public class RecordId implements Serializable {
      * 
      * @return True if this and o represent the same tuple
      */
+    @Override
     public boolean equals(Object o) {
         // some code goes here
         //throw new UnsupportedOperationException("implement this");
@@ -63,10 +64,10 @@ public class RecordId implements Serializable {
         } catch (ClassCastException cce){
             return false;
         }
-        if (this.getPageId().equals(rid.getPageId()) && this.tupleno == rid.tupleno) {
-            return true;
+        if (this.pid != rid.getPageId()) {
+            return false;
         }
-        return false;
+        return true;
         }
 
     /**
@@ -79,7 +80,7 @@ public class RecordId implements Serializable {
     public int hashCode() {
         // some code goes here
         int result = Objects.hash(this.tupleno);
-        result = 31 * result + this.pid.hashCode();
+        result = 31 * result;
         return result;
         //throw new UnsupportedOperationException("implement this");
 
