@@ -290,7 +290,17 @@ public class HeapPage implements Page {
      * Returns true if associated slot on this page is filled.
      */
     public boolean isSlotUsed(int i) {
-        // some code goes here
+        // some code goes here -- COMPLETE
+    	int byteNumber = i/8;
+    	int bitNumber = i%8;
+    	if (byteNumber <= 0 || byteNumber >= header.length) {
+    		return false;
+    	}
+    	int mask = 1 << bitNumber;
+    	byte byteInSlot = header[byteNumber];
+        if ((byteInSlot & mask) > 0) {
+        	return true;
+        }
         return false;
     }
 

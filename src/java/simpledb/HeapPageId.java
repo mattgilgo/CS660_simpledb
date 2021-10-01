@@ -2,6 +2,8 @@ package simpledb;
 
 /** Unique identifier for HeapPage objects. */
 public class HeapPageId implements PageId {
+	private int tableID;
+	private int pageNumber;
 
     /**
      * Constructor. Create a page id structure for a specific page of a
@@ -11,13 +13,15 @@ public class HeapPageId implements PageId {
      * @param pgNo The page number in that table.
      */
     public HeapPageId(int tableId, int pgNo) {
-        // some code goes here
+        // some code goes here -- COMPLETE
+    	this.tableID = tableId;
+    	this.pageNumber = pgNo;
     }
 
     /** @return the table associated with this PageId */
     public int getTableId() {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+        return this.tableID;
     }
 
     /**
@@ -25,8 +29,8 @@ public class HeapPageId implements PageId {
      *   this PageId
      */
     public int pageNumber() {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+        return this.pageNumber;
     }
 
     /**
@@ -36,8 +40,10 @@ public class HeapPageId implements PageId {
      * @see BufferPool
      */
     public int hashCode() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        // some code goes here -- COMPLETE
+    	String hCode = "" + this.tableID + this.pageNumber;
+    	return hCode.hashCode();
+        //throw new UnsupportedOperationException("implement this");
     }
 
     /**
@@ -48,8 +54,15 @@ public class HeapPageId implements PageId {
      *   ids are the same)
      */
     public boolean equals(Object o) {
-        // some code goes here
-        return false;
+        // some code goes here -- COMPLETE
+    	boolean checkEqual = false;
+    	if (o instanceof PageId) {
+    		PageId pid = (PageId) o;
+    		if ((this.getTableId() == pid.getTableId()) && (this.pageNumber() == pid.pageNumber())) {
+    			checkEqual = true;
+    		}
+    	}
+        return checkEqual;
     }
 
     /**
