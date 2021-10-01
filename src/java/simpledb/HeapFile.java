@@ -129,9 +129,80 @@ public class HeapFile implements DbFile {
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
-    	
-        return null;
+    	return new HeapFileIterator(this, tid);
     }
+    
+    class HeapFileIterator extends AbstractDbFileIterator {
 
+        Iterator<Tuple> tupleIter;
+        int pageNumber;
+        TransactionId currentTid;
+        HeapFile heapFile;
+
+        /**
+         * Set local variables for HeapFile and Transactionid
+         * @param hf The underlying HeapFile.
+         * @param tid The transaction ID.
+         */
+        public HeapFileIterator(HeapFile hf, TransactionId tid) {            
+        	heapFile = hf;
+            currentTid = tid;
+        }
+
+        /**
+         * Open the iterator, must be called before readNext.
+         */
+        public void open() throws DbException, TransactionAbortedException {
+            pageNumber = -1;
+        }
+
+        @Override
+        protected Tuple readNext() throws TransactionAbortedException, DbException {
+            
+        	// If the current tuple iterator has no more tuples.
+        	if (tupleIter != null && !tupleIter.hasNext()) {	
+                tupleIter = null;
+            }
+
+        	// Keep trying to open a tuple iterator until we find one of run out of pages.
+            while (tupleIter == null && pageNumber < heapFile.numPages()-1) {
+                pageNumber++;		// Go to next page.
+                
+                // Get the iterator for the current page
+                HeapPageId currentPageId = new HeapPageId(heapFile.getId(), pageNumber);
+                HeapPage currentPage = (HeapPage) Database.getBufferPool().getPage(currentTid,
+                        currentPageId, Permissions.READ_ONLY);
+                tupleIter = currentPage.iterator();
+                
+                // Make sure the iterator has tuples in it
+                if (!tupleIter.hasNext())
+                	tupleIter = null;
+            }
+
+            // Make sure we found a tuple iterator
+            if (tupleIter == null)
+                return null;
+            
+            // Return the next tuple.
+            return tupleIter.next();
+        }
+
+        /**
+         * Rewind closes the current iterator and then opens it again.
+         */
+        public void rewind() throws DbException, TransactionAbortedException {
+            close();
+            open();
+        }
+
+        /**
+         * Close the iterator, which resets the counters so it can be opened again.
+         */
+        public void close() {
+            super.close();
+            tupleIter = null;
+            pageNumber = Integer.MAX_VALUE;
+        }
+    }
 }
 

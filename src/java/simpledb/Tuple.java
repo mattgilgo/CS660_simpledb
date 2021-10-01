@@ -3,8 +3,7 @@ package simpledb;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Tuple maintains information about the contents of a tuple. Tuples have a
@@ -14,9 +13,9 @@ import java.util.Objects;
 public class Tuple implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Field Fields[];
-    private TupleDesc td;
-    private RecordId tdid;
+    private TupleDesc tupleD;		//-- COMPLETE
+    private RecordId recordID;		//-- COMPLETE
+    private Field fields[];			//-- COMPLETE
 
     /**
      * Create a new tuple with the specified schema (type).
@@ -26,21 +25,22 @@ public class Tuple implements Serializable {
      *            instance with at least one field.
      */
     public Tuple(TupleDesc td) {
-        // some code goes here
-        this.td = td;
-        this.tdid = null;
-        this.Fields = new Field[td.numFields()];
-        for(int i = 0; i<td.numFields(); i++){
-            Fields[i] = null;
-        }
+        // some code goes here -- COMPLETE
+    	this.tupleD = td;
+    	this.recordID = null;
+    	int numF = td.numFields();
+    	this.fields = new Field[numF];
+    	for (int i=0; i < numF; i++) {
+    		this.fields[i] = null;
+    	}
     }
 
     /**
      * @return The TupleDesc representing the schema of this tuple.
      */
     public TupleDesc getTupleDesc() {
-        // some code goes here
-        return this.td;
+        // some code goes here -- COMPLETE
+        return this.tupleD;
     }
 
     /**
@@ -48,8 +48,8 @@ public class Tuple implements Serializable {
      *         be null.
      */
     public RecordId getRecordId() {
-        // some code goes here
-        return this.tdid;
+        // some code goes here -- COMPLETE
+        return this.recordID;
     }
 
     /**
@@ -59,8 +59,8 @@ public class Tuple implements Serializable {
      *            the new RecordId for this tuple.
      */
     public void setRecordId(RecordId rid) {
-        // some code goes here
-        this.tdid = rid;
+        // some code goes here -- COMPLETE
+    	this.recordID = rid;
     }
 
     /**
@@ -72,8 +72,10 @@ public class Tuple implements Serializable {
      *            new value for the field.
      */
     public void setField(int i, Field f) {
-        // some code goes here
-        this.Fields[i] = f;
+        // some code goes here -- COMPLETE
+    	assert(i >= 0);
+    	assert(i < this.fields.length);
+    	this.fields[i] = f;
     }
 
     /**
@@ -83,8 +85,8 @@ public class Tuple implements Serializable {
      *            field index to return. Must be a valid index.
      */
     public Field getField(int i) {
-        // some code goes here
-        return this.Fields[i];
+        // some code goes here -- COMPLETE
+        return this.fields[i];
     }
 
     /**
@@ -95,9 +97,17 @@ public class Tuple implements Serializable {
      *
      * where \t is any whitespace (except a newline)
      */
-    public String toString() {
-        // some code goes here
-        throw new UnsupportedOperationException("Implement this");
+    public String toString() {                                                                // STILL NEED THIS!!!
+        // some code goes here -- COMPLETE
+    	String str = null;
+    	int indexerForStr = this.fields.length - 1;
+    	for (int i = 0; i < indexerForStr; i++) {
+    		str += this.fields[i] + "\t";
+    	}
+    	
+    	str += this.fields[indexerForStr] + "\n";
+    	return str;
+        //throw new UnsupportedOperationException("Implement this");
     }
 
     /**
@@ -106,32 +116,36 @@ public class Tuple implements Serializable {
      * */
     public Iterator<Field> fields()
     {
-        // some code goes here
+        // some code goes here  -- COMPLETE
         Iterator itr = new Tuple.ArrayIterator();
         return itr;
     }
 
     /**
-     * reset the TupleDesc of thi tuple
+     * reset the TupleDesc of this tuple
      * */
     public void resetTupleDesc(TupleDesc td)
     {
-        // some code goes here
-        this.td = null;
+        // some code goes here -- COMPLETE
+    	if (tupleD == td) {
+    		this.recordID = null;
+    	}
     }
+    
     private class ArrayIterator implements Iterator {
         int current;
-        public ArrayIterator (){
+        public ArrayIterator() {
             this.current = 0;
         }
-        public boolean hasNext(){
-            return (current < Fields.length);
+        public boolean hasNext() {
+            return (current < fields.length);
         }
         public Object next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             current++;
-            return Fields[current - 1];
+            return fields[current - 1];
         }
     }
 }

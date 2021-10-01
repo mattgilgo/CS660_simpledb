@@ -16,8 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Threadsafe, all fields are final
  */
 public class BufferPool {
-    final ConcurrentHashMap<PageId,Page> pageMap;
-    final private int numPages;
+	final ConcurrentHashMap<PageId,Page> pageMap;
+	final private int numPages;
+	
     /** Bytes per page, including header. */
     private static final int PAGE_SIZE = 4096;
 
@@ -34,9 +35,10 @@ public class BufferPool {
      * @param numPages maximum number of pages in this buffer pool.
      */
     public BufferPool(int numPages) {
-        // some code goes here
-        this.pageMap = new ConcurrentHashMap<PageId, Page>();
-        this.numPages = numPages;
+        // some code goes here -- COMPLETE
+    	this.pageMap = new ConcurrentHashMap<PageId, Page>();
+    	this.numPages = numPages;
+    	
     }
     
     public static int getPageSize() {
@@ -70,18 +72,18 @@ public class BufferPool {
      */
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
-        // some code goes here
-        if (pageMap.containsKey(pid)) {
-            return pageMap.get(pid);
-        } else {
-            if (numPages <= pageMap.size()) {
-                evictPage();
-            }
-            DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
-            Page pageToReturn = dbFile.readPage(pid);
-            pageMap.put(pid, pageToReturn);
-            return pageToReturn;
-        }
+        // some code goes here -- COMPLETE
+    	if (pageMap.containsKey(pid)) {
+    		return pageMap.get(pid);
+    	} else {
+    		if (numPages <= pageMap.size()) {
+    			evictPage();
+    		}
+    		DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
+    		Page pageToReturn = dbFile.readPage(pid);
+    		pageMap.put(pid, pageToReturn);
+    		return pageToReturn;
+    	}
     }
 
     /**
