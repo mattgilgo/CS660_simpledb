@@ -14,6 +14,10 @@ import java.util.*;
  * @author Sam Madden
  */
 public class HeapFile implements DbFile {
+	
+	File heapFile;
+	TupleDesc tD;
+	private int id;
 
     /**
      * Constructs a heap file backed by the specified file.
@@ -23,7 +27,10 @@ public class HeapFile implements DbFile {
      *            file.
      */
     public HeapFile(File f, TupleDesc td) {
-        // some code goes here
+        // some code goes here --COMPLETE
+    	this.heapFile = f;
+    	this.tD = td;
+    	this.id = f.getAbsoluteFile().hashCode();
     }
 
     /**
@@ -32,8 +39,8 @@ public class HeapFile implements DbFile {
      * @return the File backing this HeapFile on disk.
      */
     public File getFile() {
-        // some code goes here
-        return null;
+        // some code goes here --COMPLETE
+        return this.heapFile;
     }
 
     /**
@@ -46,8 +53,9 @@ public class HeapFile implements DbFile {
      * @return an ID uniquely identifying this HeapFile.
      */
     public int getId() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        // some code goes here -- COMPLETE
+    	return this.heapFile.getAbsoluteFile().hashCode();
+        //throw new UnsupportedOperationException("implement this");
     }
 
     /**
@@ -56,14 +64,33 @@ public class HeapFile implements DbFile {
      * @return TupleDesc of this DbFile.
      */
     public TupleDesc getTupleDesc() {
-        // some code goes here
-        throw new UnsupportedOperationException("implement this");
+        // some code goes here -- COMPLETE
+    	return this.tD;
+        //throw new UnsupportedOperationException("implement this");
     }
 
     // see DbFile.java for javadocs
     public Page readPage(PageId pid) {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	try {
+            RandomAccessFile raf = new RandomAccessFile(this.heapFile,"r");
+            int offset = BufferPool.getPageSize() * pid.pageNumber();
+            if (offset + BufferPool.getPageSize() > raf.length()) {
+                System.err.println("The page offset is above the max");
+                System.exit(1);
+            }
+            raf.seek(offset);
+            byte[] storedData = new byte[BufferPool.getPageSize()];
+            raf.readFully(storedData);
+            raf.close();
+            return new HeapPage((HeapPageId) pid, storedData);
+        } catch (FileNotFoundException e) {
+            System.err.println("FileNotFoundException: " + e.getMessage());
+            throw new IllegalArgumentException();
+        } catch (IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+            throw new IllegalArgumentException();
+        }
     }
 
     // see DbFile.java for javadocs
@@ -76,8 +103,11 @@ public class HeapFile implements DbFile {
      * Returns the number of pages in this HeapFile.
      */
     public int numPages() {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+    	int bPoolSize = BufferPool.getPageSize();
+    	int heapFileLen = (int) this.heapFile.length();
+    	int nPages = (int) (Math.ceil(heapFileLen/bPoolSize)); 
+        return nPages;
     }
 
     // see DbFile.java for javadocs
@@ -99,6 +129,7 @@ public class HeapFile implements DbFile {
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
+    	
         return null;
     }
 

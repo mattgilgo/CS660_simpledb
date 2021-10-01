@@ -7,6 +7,10 @@ import java.util.*;
  * TupleDesc describes the schema of a tuple.
  */
 public class TupleDesc implements Serializable {
+	private int nFields;	 		//-- COMPLETE
+	private String[] fNames;		//-- COMPLETE
+	private Type[] fTypes;			//-- COMPLETE
+	private Vector<TDItem> tdItems;
 
     /**
      * A help class to facilitate organizing the information of each field
@@ -42,7 +46,8 @@ public class TupleDesc implements Serializable {
      * */
     public Iterator<TDItem> iterator() {
         // some code goes here
-        return null;
+    	Iterator<TDItem> iterTD = tdItems.iterator();
+    	return iterTD;
     }
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +64,13 @@ public class TupleDesc implements Serializable {
      *            be null.
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
-        // some code goes here
+        // some code goes here -- COMPLETE
+    	this.nFields = typeAr.length;
+    	this.tdItems = new Vector<TDItem>(fieldAr.length);
+    	for (int i = 0; i < fieldAr.length; i++) {
+    		this.tdItems.add(new TDItem(typeAr[i],fieldAr[i]));
+    	}
+    	
     }
 
     /**
@@ -71,15 +82,20 @@ public class TupleDesc implements Serializable {
      *            TupleDesc. It must contain at least one entry.
      */
     public TupleDesc(Type[] typeAr) {
-        // some code goes here
+        // some code goes here -- COMPLETE
+    	this.nFields = typeAr.length;
+    	this.tdItems = new Vector<TDItem>(typeAr.length);
+    	for (int i = 0; i < typeAr.length; i++) {
+    		this.tdItems.add(new TDItem(typeAr[i],null));
+    	}
     }
 
     /**
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+        return this.nFields;
     }
 
     /**
@@ -92,8 +108,11 @@ public class TupleDesc implements Serializable {
      *             if i is not a valid field reference.
      */
     public String getFieldName(int i) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	if (i >= this.nFields) {
+    		throw new NoSuchElementException();
+    	}
+        return tdItems.get(i).fieldName;
     }
 
     /**
@@ -107,8 +126,11 @@ public class TupleDesc implements Serializable {
      *             if i is not a valid field reference.
      */
     public Type getFieldType(int i) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	if (i >= this.nFields) {
+    		throw new NoSuchElementException();
+    	}
+        return tdItems.get(i).fieldType;
     }
 
     /**
@@ -121,8 +143,26 @@ public class TupleDesc implements Serializable {
      *             if no field with a matching name is found.
      */
     public int fieldNameToIndex(String name) throws NoSuchElementException {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+    	if (name == null) {
+    		throw new NoSuchElementException("Field is non-existent");
+    	}
+    	//boolean allNulls = true;
+    	int nonNulls = 0;
+    	for(int i = 0; i < this.nFields; i++) {
+    		if (tdItems.get(i).fieldName != null) {
+    			//allNulls = false;
+    			nonNulls++;
+        		if (tdItems.get(i).fieldName.equals(name)) {
+        			return i;
+        		}
+    		}
+    	}
+    	if (nonNulls > 0) {
+    		throw new NoSuchElementException("All fields names are null");
+    	}
+    	
+        throw new NoSuchElementException("Field name not found");
     }
 
     /**
@@ -130,8 +170,12 @@ public class TupleDesc implements Serializable {
      *         Note that tuples from a given TupleDesc are of a fixed size.
      */
     public int getSize() {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+    	int tupleSizeInBytes = 0;
+    	for (TDItem item : tdItems) {
+    		tupleSizeInBytes += item.fieldType.getLen();
+    	}
+        return tupleSizeInBytes;
     }
 
     /**
@@ -145,8 +189,20 @@ public class TupleDesc implements Serializable {
      * @return the new TupleDesc
      */
     public static TupleDesc merge(TupleDesc td1, TupleDesc td2) {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	int td1td2Len = td1.numFields() + td2.numFields();
+    	String mergedFNames[] = new String[td1td2Len];
+    	Type mergedFTypes[] = new Type[td1td2Len];
+    	for (int i = 0; i < td1.numFields(); i++) {
+    		mergedFNames[i] = td1.getFieldName(i);
+    		mergedFTypes[i] = td1.getFieldType(i);
+    	}
+    	for (int i = 0; i < td2.numFields(); i++) {
+    		mergedFNames[i+td1.numFields()] = td2.getFieldName(i);
+    		mergedFTypes[i+td1.numFields()] = td2.getFieldType(i);
+    	}
+    	TupleDesc mergedTuple = new TupleDesc(mergedFTypes, mergedFNames);
+        return mergedTuple;
     }
 
     /**
@@ -159,8 +215,24 @@ public class TupleDesc implements Serializable {
      * @return true if the object is equal to this TupleDesc.
      */
     public boolean equals(Object o) {
-        // some code goes here
-        return false;
+        // some code goes here -- COMPLETE
+    	TupleDesc tdObject;
+    	if (o == null) {
+    		return false;
+    	}
+    	try{
+    		tdObject = (TupleDesc) o;
+    	} catch (ClassCastException cce) {
+    	    return false;
+    	}
+    	if (this.getSize()!=tdObject.getSize()) {
+    		return false;
+    	}    
+    	for (int i = 0; i < this.nFields; i++) {
+    	    if (this.getFieldType(i)!=tdObject.getFieldType(i))
+    		return false;
+    	} 
+        return true;
     }
 
     public int hashCode() {
@@ -177,7 +249,14 @@ public class TupleDesc implements Serializable {
      * @return String describing this descriptor.
      */
     public String toString() {
-        // some code goes here
-        return "";
+        // some code goes here -- COMPLETE
+    	String tupleStr = new String();
+    	for (int i=0; i < this.nFields; i++) {
+    		tupleStr += fTypes[i];
+    		tupleStr += "(";
+    		tupleStr += fNames[i];
+    		tupleStr += ")";
+    	}
+        return tupleStr;
     }
 }

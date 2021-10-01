@@ -17,13 +17,45 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Threadsafe
  */
 public class Catalog {
+	
+	
+	private HashMap<String,Table> HashName;
+	private HashMap<Integer,Table> HashID;
 
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
-        // some code goes here
+        // some code goes here -- COMPLETE
+    	this.HashName = new HashMap<String,Table>();
+    	this.HashID = new HashMap<Integer,Table>();
+    }
+    
+    private class Table {
+        private String name;
+        private DbFile file;        
+        private String pKeyField;
+        int tableID = file.getId();
+    	
+    	public Table(DbFile dbfile, String name, String pkeyField) {
+            this.name = name;
+            this.file = dbfile;
+            this.pKeyField = pkeyField;
+        }
+        public DbFile getDbFile() {
+            return this.file;
+        }
+        public String getPkeyField() {
+            return this.pKeyField;
+        }
+        public String getName() {
+            return this.name;
+        }
+        public int getID() {
+        	return this.tableID;
+        }
+
     }
 
     /**
@@ -36,11 +68,15 @@ public class Catalog {
      * @param pkeyField the name of the primary key field
      */
     public void addTable(DbFile file, String name, String pkeyField) {
-        // some code goes here
+        // some code goes here -- COMPLETE
+    	Table addedTable = new Table(file, name, pkeyField);
+    	this.HashName.put(name, addedTable);
+    	this.HashID.put(file.getId(), addedTable);
+    	
     }
 
     public void addTable(DbFile file, String name) {
-        addTable(file, name, "");
+    	addTable(file, name, "");
     }
 
     /**
@@ -59,8 +95,13 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public int getTableId(String name) throws NoSuchElementException {
-        // some code goes here
-        return 0;
+        // some code goes here -- COMPLETE
+    	Table hashNameTable = this.HashName.get(name);
+    	if (hashNameTable != null) {
+    		return hashNameTable.getID();
+    	} else {
+    		throw new NoSuchElementException("This Table ID does not exist.");
+    	}
     }
 
     /**
@@ -70,8 +111,14 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	Table hashIDTable = this.HashID.get(tableid);
+    	if (hashIDTable != null) {
+    		DbFile fileForTupleDesc = hashIDTable.getDbFile();
+    		return fileForTupleDesc.getTupleDesc();
+    	} else {
+    		throw new NoSuchElementException("This Tuple Description does not exist.");
+    	}
     }
 
     /**
@@ -81,28 +128,46 @@ public class Catalog {
      *     function passed to addTable
      */
     public DbFile getDatabaseFile(int tableid) throws NoSuchElementException {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	Table hashIDTable = this.HashID.get(tableid);
+    	if (hashIDTable != null) {
+    		return hashIDTable.getDbFile();
+    	} else {
+    		throw new NoSuchElementException("This Database File does not exist.");
+    	}
     }
 
     public String getPrimaryKey(int tableid) {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	Table hashIDTable = this.HashID.get(tableid);
+    	if (hashIDTable != null) {
+    		return hashIDTable.getPkeyField();
+    	} else {
+    		throw new NoSuchElementException("This Primary Key Field does not exist.");
+    	}
     }
 
     public Iterator<Integer> tableIdIterator() {
-        // some code goes here
-        return null;
+        // some code goes here -- COMPLETE
+    	Set<Integer> keySet = this.HashID.keySet();
+        return keySet.iterator();
     }
 
     public String getTableName(int id) {
-        // some code goes here
-        return null;
+    	// some code goes here -- COMPLETE
+    	Table hashIDTable = this.HashID.get(id);
+    	if (hashIDTable != null) {
+    		return hashIDTable.getName();
+    	} else {
+    		throw new NoSuchElementException("This Table Name does not exist.");
+    	}
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
+    	this.HashName.clear();
+    	this.HashID.clear();
     }
     
     /**
