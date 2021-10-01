@@ -14,9 +14,6 @@ import java.util.*;
  * @author Sam Madden
  */
 public class HeapFile implements DbFile {
-	
-	File heapFile;
-	TupleDesc tD;
 
     /**
      * Constructs a heap file backed by the specified file.
@@ -26,9 +23,7 @@ public class HeapFile implements DbFile {
      *            file.
      */
     public HeapFile(File f, TupleDesc td) {
-        // some code goes here --COMPLETE
-    	this.heapFile = f;
-    	this.tD = td;
+        // some code goes here
     }
 
     /**
@@ -37,8 +32,8 @@ public class HeapFile implements DbFile {
      * @return the File backing this HeapFile on disk.
      */
     public File getFile() {
-        // some code goes here --COMPLETE
-        return this.heapFile;
+        // some code goes here
+        return null;
     }
 
     /**
@@ -51,9 +46,8 @@ public class HeapFile implements DbFile {
      * @return an ID uniquely identifying this HeapFile.
      */
     public int getId() {
-        // some code goes here -- COMPLETE
-    	return this.heapFile.getAbsoluteFile().hashCode();
-        //throw new UnsupportedOperationException("implement this");
+        // some code goes here
+        throw new UnsupportedOperationException("implement this");
     }
 
     /**
@@ -62,9 +56,8 @@ public class HeapFile implements DbFile {
      * @return TupleDesc of this DbFile.
      */
     public TupleDesc getTupleDesc() {
-        // some code goes here -- COMPLETE
-    	return this.tD;
-        //throw new UnsupportedOperationException("implement this");
+        // some code goes here
+        throw new UnsupportedOperationException("implement this");
     }
 
     // see DbFile.java for javadocs
@@ -83,11 +76,8 @@ public class HeapFile implements DbFile {
      * Returns the number of pages in this HeapFile.
      */
     public int numPages() {
-        // some code goes here -- COMPLETE
-    	int bPoolSize = BufferPool.getPageSize();
-    	int heapFileLen = (int) this.heapFile.length();
-    	int nPages = (int) (Math.ceil(heapFileLen/bPoolSize)); 
-        return nPages;
+        // some code goes here
+        return 0;
     }
 
     // see DbFile.java for javadocs

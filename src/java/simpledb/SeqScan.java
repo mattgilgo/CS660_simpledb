@@ -10,14 +10,6 @@ import java.util.*;
 public class SeqScan implements DbIterator {
 
     private static final long serialVersionUID = 1L;
-    int tableID;
-    String tableALIAS;
-    TransactionId tID;
-    DbFileIterator iter;
-    // DbFile = file; -- ADD THEN IMPLEMENT INTO SEQSCAN
-    
-    
-    
 
     /**
      * Creates a sequential scan over the specified table as a part of the
@@ -36,10 +28,7 @@ public class SeqScan implements DbIterator {
      *            tableAlias.null, or null.null).
      */
     public SeqScan(TransactionId tid, int tableid, String tableAlias) {
-        // some code goes here -- ALMOST COMPLETE NEEDS FILE ASSERT PART
-    	tableID = tableid;
-    	tID = tid;
-    	tableALIAS = tableAlias;
+        // some code goes here
     }
 
     /**
@@ -56,8 +45,8 @@ public class SeqScan implements DbIterator {
      * */
     public String getAlias()
     {
-        // some code goes here -- COMPLETE
-        return this.tableALIAS;
+        // some code goes here
+        return null;
     }
 
     /**
@@ -100,24 +89,22 @@ public class SeqScan implements DbIterator {
     }
 
     public boolean hasNext() throws TransactionAbortedException, DbException {
-        // some code goes here -- COMPLETE
-        return iter.hasNext();
+        // some code goes here
+        return false;
     }
 
     public Tuple next() throws NoSuchElementException,
             TransactionAbortedException, DbException {
-        // some code goes here -- COMPLETE
-        return iter.next();
+        // some code goes here
+        return null;
     }
 
     public void close() {
-        // some code goes here -- COMPLETE
-    	iter.close();
+        // some code goes here
     }
 
     public void rewind() throws DbException, NoSuchElementException,
             TransactionAbortedException {
-        // some code goes here -- COMPLETE
-    	iter.rewind();
+        // some code goes here
     }
 }

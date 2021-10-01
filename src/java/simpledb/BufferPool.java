@@ -16,9 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Threadsafe, all fields are final
  */
 public class BufferPool {
-	final ConcurrentHashMap<PageId,Page> pageMap;
-	final private int numPages;
-	
     /** Bytes per page, including header. */
     private static final int PAGE_SIZE = 4096;
 
@@ -35,10 +32,7 @@ public class BufferPool {
      * @param numPages maximum number of pages in this buffer pool.
      */
     public BufferPool(int numPages) {
-        // some code goes here -- COMPLETE
-    	this.pageMap = new ConcurrentHashMap<PageId, Page>();
-    	this.numPages = numPages;
-    	
+        // some code goes here
     }
     
     public static int getPageSize() {
@@ -72,20 +66,8 @@ public class BufferPool {
      */
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
-        // some code goes here -- ALMOST COMPLETE, NEED TRANSACTION ABORTED PORTION
-    	Page page;
-    	synchronized(this) {
-    		page = pageMap.get(pid);
-    		if (page == null) {
-    			if pageMap.size() >= this.numPages {
-    				throw new DbException("Out of buffer pages");
-    			}
-    		}
-    		int tableID = pid.getTableId()
-    		page = Database.getCatalog().getDatabaseFile(tableID).readPage(pid);
-    		pageMap.put(pid, page);
-    	}
-        return page;
+        // some code goes here
+        return null;
     }
 
     /**

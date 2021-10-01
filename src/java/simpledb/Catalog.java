@@ -17,9 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Threadsafe
  */
 public class Catalog {
-	
-	
-	private ArrayList<Catalog> tables;
 
     /**
      * Constructor.
