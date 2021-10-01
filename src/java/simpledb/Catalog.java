@@ -13,49 +13,47 @@ import java.util.concurrent.ConcurrentHashMap;
  * For now, this is a stub catalog that must be populated with tables by a
  * user program before it can be used -- eventually, this should be converted
  * to a catalog that reads a catalog table from disk.
- * 
+ *
  * @Threadsafe
  */
 public class Catalog {
-	
-	
-	private HashMap<String,Table> HashName;
-	private HashMap<Integer,Table> HashID;
 
+    private class Table{
+            private String Pkey;
+            private DbFile file;
+            private String tableName;
+            private int tableId;
+
+            public Table(DbFile file, String name, String pkeyField) {
+                this.file = file;
+                this.tableName = name;
+                this.Pkey = pkeyField;
+                this.tableId = file.getId();
+            }
+
+            public String getName(){
+                return this.tableName;
+            }
+            public DbFile getFile(){
+                return this.file;
+            }
+            public String getPkey(){
+                return this.Pkey;
+            }
+            public int getId(){
+                return this.tableId;
+            }
+        }
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
+    private HashMap<String,Table> HashName;
+    private HashMap<Integer,Table> HashID;
     public Catalog() {
-        // some code goes here -- COMPLETE
-    	this.HashName = new HashMap<String,Table>();
-    	this.HashID = new HashMap<Integer,Table>();
-    }
-    
-    private class Table {
-        private String name;
-        private DbFile file;        
-        private String pKeyField;
-        int tableID = file.getId();
-    	
-    	public Table(DbFile dbfile, String name, String pkeyField) {
-            this.name = name;
-            this.file = dbfile;
-            this.pKeyField = pkeyField;
-        }
-        public DbFile getDbFile() {
-            return this.file;
-        }
-        public String getPkeyField() {
-            return this.pKeyField;
-        }
-        public String getName() {
-            return this.name;
-        }
-        public int getID() {
-        	return this.tableID;
-        }
-
+        // some code goes here
+        this.HashName = new HashMap<String,Table>();
+        this.HashID = new HashMap<Integer,Table>();
     }
 
     /**
@@ -68,15 +66,14 @@ public class Catalog {
      * @param pkeyField the name of the primary key field
      */
     public void addTable(DbFile file, String name, String pkeyField) {
-        // some code goes here -- COMPLETE
-    	Table addedTable = new Table(file, name, pkeyField);
-    	this.HashName.put(name, addedTable);
-    	this.HashID.put(file.getId(), addedTable);
-    	
+        // some code goes here
+        Table addedTable = new Table(file, name, pkeyField);
+        this.HashName.put(name, addedTable);
+        this.HashID.put(file.getId(), addedTable);
     }
 
     public void addTable(DbFile file, String name) {
-    	addTable(file, name, "");
+        addTable(file, name, "");
     }
 
     /**
@@ -95,13 +92,13 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public int getTableId(String name) throws NoSuchElementException {
-        // some code goes here -- COMPLETE
-    	Table hashNameTable = this.HashName.get(name);
-    	if (hashNameTable != null) {
-    		return hashNameTable.getID();
-    	} else {
-    		throw new NoSuchElementException("This Table ID does not exist.");
-    	}
+        // some code goes here
+        Table hashNameTable = this.HashName.get(name);
+        if (hashNameTable == null) {
+            throw new NoSuchElementException();
+        }
+        DbFile DbFile = hashNameTable.getFile();
+        return DbFile.getId();
     }
 
     /**
@@ -111,14 +108,14 @@ public class Catalog {
      * @throws NoSuchElementException if the table doesn't exist
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
-        // some code goes here -- COMPLETE
-    	Table hashIDTable = this.HashID.get(tableid);
-    	if (hashIDTable != null) {
-    		DbFile fileForTupleDesc = hashIDTable.getDbFile();
-    		return fileForTupleDesc.getTupleDesc();
-    	} else {
-    		throw new NoSuchElementException("This Tuple Description does not exist.");
-    	}
+        // some code goes here
+        TupleDesc td;
+        Table hashNameTable = this.HashID.get(tableid);
+        if (hashNameTable == null){
+            throw new NoSuchElementException();
+        }
+        DbFile DbFile = hashNameTable.getFile();
+        return DbFile.getTupleDesc();
     }
 
     /**
@@ -128,48 +125,46 @@ public class Catalog {
      *     function passed to addTable
      */
     public DbFile getDatabaseFile(int tableid) throws NoSuchElementException {
-        // some code goes here -- COMPLETE
-    	Table hashIDTable = this.HashID.get(tableid);
-    	if (hashIDTable != null) {
-    		return hashIDTable.getDbFile();
-    	} else {
-    		throw new NoSuchElementException("This Database File does not exist.");
-    	}
+        // some code goes here
+        Table hashNameTable = this.HashID.get(tableid);
+        if (hashNameTable == null){
+            throw new NoSuchElementException();
+        }
+        DbFile DbFile = hashNameTable.getFile();
+        return DbFile;
     }
 
     public String getPrimaryKey(int tableid) {
-        // some code goes here -- COMPLETE
-    	Table hashIDTable = this.HashID.get(tableid);
-    	if (hashIDTable != null) {
-    		return hashIDTable.getPkeyField();
-    	} else {
-    		throw new NoSuchElementException("This Primary Key Field does not exist.");
-    	}
+        // some code goes here
+        Table hashNameTable = this.HashID.get(tableid);
+        if (hashNameTable == null){
+            throw new NoSuchElementException();
+        }
+        return hashNameTable.getPkey();
     }
 
     public Iterator<Integer> tableIdIterator() {
-        // some code goes here -- COMPLETE
-    	Set<Integer> keySet = this.HashID.keySet();
+        // some code goes here
+        Set<Integer> keySet = this.HashID.keySet();
         return keySet.iterator();
     }
 
     public String getTableName(int id) {
-    	// some code goes here -- COMPLETE
-    	Table hashIDTable = this.HashID.get(id);
-    	if (hashIDTable != null) {
-    		return hashIDTable.getName();
-    	} else {
-    		throw new NoSuchElementException("This Table Name does not exist.");
-    	}
+        // some code goes here
+        Table hashIDTable = this.HashID.get(id);
+        if (hashIDTable == null) {
+            throw new NoSuchElementException();
+        }
+        return hashIDTable.getName();
     }
-    
+
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
-    	this.HashName.clear();
-    	this.HashID.clear();
+        this.HashName.clear();
+        this.HashID.clear();
     }
-    
+
     /**
      * Reads the schema from a file and creates the appropriate tables in the database.
      * @param catalogFile
@@ -179,7 +174,7 @@ public class Catalog {
         String baseFolder=new File(new File(catalogFile).getAbsolutePath()).getParent();
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File(catalogFile)));
-            
+
             while ((line = br.readLine()) != null) {
                 //assume line is of the format name (field type, field type, ...)
                 String name = line.substring(0, line.indexOf("(")).trim();
