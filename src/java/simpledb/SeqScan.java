@@ -16,10 +16,6 @@ public class SeqScan implements DbIterator {
     DbFile heapFile;
     DbFileIterator iter;
     
-    
-    
-    
-
     /**
      * Creates a sequential scan over the specified table as a part of the
      * specified transaction.
@@ -36,12 +32,14 @@ public class SeqScan implements DbIterator {
      *            are, but the resulting name can be null.fieldName,
      *            tableAlias.null, or null.null).
      */
+    
     public SeqScan(TransactionId tid, int tableid, String tableAlias) {
         // some code goes here -- ALMOST COMPLETE NEEDS FILE ASSERT PART
     	tableID = tableid;
     	tID = tid;
     	tableALIAS = tableAlias;
     	heapFile = Database.getCatalog().getDatabaseFile(tableid);
+    	iter = heapFile.iterator(tid);
     }
 
     /**
@@ -50,7 +48,8 @@ public class SeqScan implements DbIterator {
      *       be the actual name of the table in the catalog of the database
      * */
     public String getTableName() {
-        return null;
+        String tableName = Database.getCatalog().getTableName(tableID);
+    	return tableName;
     }
 
     /**

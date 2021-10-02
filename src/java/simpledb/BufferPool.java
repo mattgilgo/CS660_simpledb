@@ -73,16 +73,15 @@ public class BufferPool {
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
         // some code goes here -- COMPLETE
+    	// if Page is found in the HashMap "pageMap", return page
     	if (pageMap.containsKey(pid)) {
     		return pageMap.get(pid);
-    	} else {
-    		if (numPages <= pageMap.size()) {
-    			evictPage();
-    		}
+    	} else { // else, find page in database, put in in pageMap, and return it
     		DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
     		Page pageToReturn = dbFile.readPage(pid);
     		pageMap.put(pid, pageToReturn);
     		return pageToReturn;
+    		// Will most likely need to use evictPage() below for next iteration
     	}
     }
 
